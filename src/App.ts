@@ -17,16 +17,18 @@ import { BaseController } from "./BaseController";
 import { variableAction } from "./viewengine/Actions";
 
 export default class App {
-    app: e.Express;
-    static instance: App;
-    engine!: TemplateEngine;
     static controllers: Set<BaseController> = new Set();
+    static instance: App;
+    app: e.Express;
+    engine!: TemplateEngine;
+    aggregator: RouteAggregator;
 
     constructor(options?: {
         plugins?: Array<MiddyFunction>;
         errorHandler?: (errorFormat: any, req: Request, res: Response, next: NextFunction) => void;
         debug?: boolean;
         errorType?: {};
+        authentication?: {};
     }) {
         App.instance = this;
         this.initViewengine();
@@ -58,9 +60,9 @@ export default class App {
         const controllerExtractor = new ControllerExtractor();
 
         // Aggregate all the controllers
-        const aggregator = new RouteAggregator(this.app, options?.debug);
-        controllerExtractor.addTask(aggregator.registerView);
-        controllerExtractor.addTask(aggregator.aggregateRoutes);
+        this.aggregator = new RouteAggregator(this.app, options?.debug);
+        controllerExtractor.addTask(this.aggregator.registerView);
+        controllerExtractor.addTask(this.aggregator.aggregateRoutes);
 
         injector.registerService(SocketServer, httpServer);
         const socketServer = Injector.instance.retrieveService(SocketServer)?.service as SocketServer;
