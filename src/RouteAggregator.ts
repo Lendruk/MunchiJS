@@ -5,7 +5,7 @@ import { RouteType, MiddyPair, MiddyFunction } from "./decorators/routeType";
 import { BaseController } from "./BaseController";
 import { RouteOptions } from "./types/RouteOptions";
 import { ErrorManager } from "./ErrorManager";
-import { checkToken } from "../../utils/checkToken";
+import { checkToken } from "./utils/checkToken";
 import { Request } from "./types/Request";
 import { Constructable } from "./interfaces/Constructable";
 import { Response } from "./types/Response";
@@ -63,7 +63,11 @@ export class RouteAggregator {
                 (req: Request, res: Response): void => {
                     const result = instance[route.methodName as string](req, res);
                     if (result instanceof Promise) {
-                        result.then((methodResult) => res.render(view.view, methodResult));
+                        result.then((methodResult) =>
+                            App.instance.engine
+                                .render(view.view, methodResult)
+                                .then((rendered) => res.type("html").send(rendered))
+                        );
                     } else {
                         App.instance.engine
                             .render(view.view, result)

@@ -1,9 +1,9 @@
 import { PropertyOptions } from "../types/PropertyOptions";
-import { mongoose } from "../../utils/database";
+import { mongoose } from "../database/Database";
 import { Model as MongooseModel, SchemaOptions } from "mongoose";
 import { ModelProperties } from "../types/ModelProperties";
-import ObjectId from "../ObjectId";
-import { BaseModel } from "../classes/BaseModel";
+import ObjectId from "../database/mongo/ObjectId";
+import { BaseModel } from "../BaseModel";
 
 function extractType(propOptions: any, items?: any) {
     const type = propOptions.type as Function;

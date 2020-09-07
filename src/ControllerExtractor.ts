@@ -17,7 +17,8 @@ export class ControllerExtractor {
     }
 
     executeTasks() {
-        const files = fs.readdirSync(`${__dirname}/../../controllers`);
+        console.log(process.cwd());
+        const files = fs.readdirSync(`${process.cwd()}/app/controllers`);
         const controllers = this.extractControllers(files);
 
         for (const controller of controllers) {
@@ -35,7 +36,7 @@ export class ControllerExtractor {
         for (const file of files) {
             if (!file.includes("index") && !file.includes("BaseController")) {
                 // eslint-disable-next-line @typescript-eslint/no-var-requires
-                const controller = require(`../../controllers/${file}`);
+                const controller = require(`${process.cwd()}/app/controllers/${file}`);
                 controllers.push(Object.values(controller)[0] as Constructable<BaseController>);
             }
         }

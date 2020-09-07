@@ -1,8 +1,8 @@
 import { Response, NextFunction } from "express";
-import { ErrorManager } from "../lib/classes/ErrorManager";
-import Token from "../models/token";
-import User from "../models/user";
-import { Request } from "../lib/types/Request";
+import { ErrorManager } from "../ErrorManager";
+import Token from "../../../Scrummer/app/models/token";
+import User from "../../../Scrummer/app/models/user";
+import { Request } from "../types/Request";
 
 export const checkToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
