@@ -1,7 +1,8 @@
-import TemplateEngine, { IndexableObject } from "./TemplateEngine";
+import TemplateEngine from "./TemplateEngine";
 
-export const forLoop = (input: string, options?: IndexableObject) => {
-
+export const forLoop = (tokenValue: string, options?: object): string => {
+    // console.log("forValue", tokenValue);
+    return tokenValue;
 };
 
 export const variableAction = (tokenValue: string, options?: object): string => {

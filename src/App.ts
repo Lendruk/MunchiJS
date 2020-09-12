@@ -14,7 +14,7 @@ import { Request } from "./types/Request";
 import { Response } from "./types/Response";
 import TemplateEngine from "./viewengine/TemplateEngine";
 import { BaseController } from "./BaseController";
-import { variableAction } from "./viewengine/Actions";
+import { forLoop, variableAction } from "./viewengine/Actions";
 
 export default class App {
     static controllers: Set<BaseController> = new Set();
@@ -90,6 +90,7 @@ export default class App {
                 { expStart: "<style>", expEnd: "</style>" },
             ],
         });
+        this.engine.registerAction(forLoop, "for");
     }
 
     static getControllers(): Set<BaseController> {

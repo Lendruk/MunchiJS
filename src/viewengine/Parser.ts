@@ -39,6 +39,7 @@ export default class Parser {
 
     parseLine(line: string, chunkOutput: string, currentMatches: Map<string, number>): string {
         let res = chunkOutput + line;
+        console.log("line", line);
         for (const action of this.actions) {
             const { token } = action;
             // There's an open expression
@@ -55,9 +56,14 @@ export default class Parser {
                         expEnd: token.expEnd,
                     };
                     currentMatches.delete(token.expStart);
-                    const value = action.function(res.slice(match.chunkIndex, match.chunkIndexEnd + 1), this.options);
+                    console.log("value", match);
+                    const value = action.function(
+                        res.slice(match.chunkIndex, match.chunkIndexEnd + token.expEnd.length),
+                        this.options
+                    );
+                    // console.log("res", res);
                     res = res.slice(0, match.chunkIndex) + value;
-                    res = this.parseLine(line.slice(index + 1), res, currentMatches);
+                    res = this.parseLine(line.slice(index + token.expEnd.length), res, currentMatches);
                 }
             } else {
                 const regex = this.buildTokenRegex(token.expStart);
