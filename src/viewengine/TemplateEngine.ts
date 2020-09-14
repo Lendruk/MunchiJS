@@ -1,34 +1,28 @@
 import fs from "fs";
-import Parser, { Token } from "./Parser";
+import { Action, ActionFunction } from "./Action";
+import Parser from "./Parser";
+import { Token, TokenPair } from "./Token";
 
 export type IndexableObject = { [index: string]: any };
 
-type ActionFunction = (tokenValue: string, options?: IndexableObject) => string;
-
-export type Action = {
-    function: ActionFunction;
-    handler: string;
-    token: Token;
-};
-
 export default class TemplateEngine {
     viewDirectory: string;
-    actions: Array<Action>;
+    tokens: Array<Token>;
 
     constructor(viewDirectory: string) {
         this.viewDirectory = viewDirectory;
-        this.actions = [];
+        this.tokens = [];
     }
 
     registerAction(action: ActionFunction, handler: string): void {
-        if (this.actions.find((act) => act.handler === handler))
+        if (this.tokens.find((act) => act instanceof Action && act.getHandler() === handler))
             throw new Error("Cannot have more than one action with the same handler");
 
-        this.actions.push({ function: action, handler, token: { expStart: "{{", expEnd: "}}" } });
+        this.tokens.push(new Action("{{", "}}", action, handler));
     }
 
-    registerToken(action: ActionFunction, token: Token): void {
-        this.actions.push({ function: action, token, handler: "" });
+    registerToken(expStart: string, expEnd: string, action: ActionFunction, enclosers?: Array<TokenPair>): void {
+        this.tokens.push(new Token(expStart, expEnd, action, enclosers));
     }
 
     /**
@@ -38,7 +32,7 @@ export default class TemplateEngine {
      */
     async render(viewComp: string, options?: object): Promise<string> {
         const stream = fs.createReadStream(`${process.cwd()}/app/${this.viewDirectory}/${viewComp}/index.munch`);
-        const parser = new Parser(this.actions, options);
+        const parser = new Parser(this.tokens, options);
         let output = "";
         for await (const chunk of stream) {
             output += parser.parse(chunk);

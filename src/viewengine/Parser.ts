@@ -1,17 +1,11 @@
 import { Match } from "./Match";
-import { Action } from "./TemplateEngine";
-
-export type Token = {
-    expStart: string;
-    expEnd: string;
-    enclosers?: Array<Token>;
-};
+import { Token, TokenPair } from "./Token";
 
 export default class Parser {
-    actions: Array<Action>;
+    actions: Array<Token>;
     options: object;
 
-    constructor(actions: Array<Action>, options?: object) {
+    constructor(actions: Array<Token>, options?: object) {
         this.actions = actions;
         this.options = options || {};
     }
@@ -39,37 +33,37 @@ export default class Parser {
 
     parseLine(line: string, chunkOutput: string, currentMatches: Map<string, number>): string {
         let res = chunkOutput + line;
-        console.log("line", line);
         for (const action of this.actions) {
-            const { token } = action;
             // There's an open expression
-            if (currentMatches.has(token.expStart)) {
-                const regex = this.buildTokenRegex(token.expEnd);
+            const expStart = action.getExpressionStart();
+            const expEnd = action.getExpressionEnd();
+            if (currentMatches.has(expStart)) {
+                const regex = this.buildTokenRegex(expEnd);
                 const index = regex.exec(line)?.index;
                 if (index != null && index !== -1) {
                     const match: Match = {
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        chunkIndex: currentMatches.get(token.expStart)!,
+                        chunkIndex: currentMatches.get(expStart)!,
                         chunkIndexEnd: chunkOutput.length + index,
                         globalIndex: chunkOutput.length,
-                        expStart: token.expStart,
-                        expEnd: token.expEnd,
+                        expStart: expStart,
+                        expEnd: expEnd,
                     };
-                    currentMatches.delete(token.expStart);
-                    console.log("value", match);
-                    const value = action.function(
-                        res.slice(match.chunkIndex, match.chunkIndexEnd + token.expEnd.length),
+                    currentMatches.delete(expStart);
+                    const value = action.getAction()(
+                        res
+                            .slice(match.chunkIndex, match.chunkIndexEnd + expEnd.length)
+                            .replace(new RegExp(`[${expStart}${expEnd}]`, "g"), ""),
                         this.options
                     );
-                    // console.log("res", res);
                     res = res.slice(0, match.chunkIndex) + value;
-                    res = this.parseLine(line.slice(index + token.expEnd.length), res, currentMatches);
+                    res = this.parseLine(line.slice(index + expEnd.length), res, currentMatches);
                 }
             } else {
-                const regex = this.buildTokenRegex(token.expStart);
+                const regex = this.buildTokenRegex(expStart);
                 const index = regex.exec(line)?.index;
-                if (index != null && index !== -1 && !this.hasEnclosers(currentMatches, token.enclosers)) {
-                    currentMatches.set(token.expStart, index + chunkOutput.length);
+                if (index != null && index !== -1 && !this.hasEnclosers(currentMatches, action.getEnclosers())) {
+                    currentMatches.set(expStart, index + chunkOutput.length);
                     res = this.parseLine(line, chunkOutput, currentMatches);
                 }
             }
@@ -78,7 +72,7 @@ export default class Parser {
         return res;
     }
 
-    private hasEnclosers(map: Map<string, number>, enclosers?: Array<Token>): boolean {
+    private hasEnclosers(map: Map<string, number>, enclosers?: Array<TokenPair>): boolean {
         if (!enclosers) return false;
 
         for (const enclosure of enclosers.map((encloser) => encloser.expStart)) {

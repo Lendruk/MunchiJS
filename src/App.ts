@@ -82,14 +82,10 @@ export default class App {
 
     private initViewengine(): void {
         this.engine = new TemplateEngine("views");
-        this.engine.registerToken(variableAction, {
-            expStart: "{",
-            expEnd: "}",
-            enclosers: [
-                { expStart: "{{", expEnd: "}}" },
-                { expStart: "<style>", expEnd: "</style>" },
-            ],
-        });
+        this.engine.registerToken("{", "}", variableAction, [
+            { expStart: "{{", expEnd: "}}" },
+            { expStart: "<style>", expEnd: "</style>" },
+        ]);
         this.engine.registerAction(forLoop, "for");
     }
 

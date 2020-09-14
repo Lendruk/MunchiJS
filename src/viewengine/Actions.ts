@@ -6,5 +6,5 @@ export const forLoop = (tokenValue: string, options?: object): string => {
 };
 
 export const variableAction = (tokenValue: string, options?: object): string => {
-    return TemplateEngine.extractVariable(tokenValue.replace(/[{}]/g, ""), options);
+    return TemplateEngine.extractVariable(tokenValue, options);
 };
