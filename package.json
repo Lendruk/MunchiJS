@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "eslint": "eslint --fix . --ext .js,.jsx,.ts,.tsx",
-    "dev": "ts-node-dev --watch ./app/utils,./app/lib,./app/models,./app/controllers --respawn --transpileOnly ./app/app.ts "
+    "eslint": "eslint --fix . --ext .js,.jsx,.ts,.tsx"
   },
   "repository": {
     "type": "git",
@@ -47,7 +46,6 @@
     "jest": "^26.1.0",
     "prettier": "^2.0.5",
     "ts-jest": "^26.1.1",
-    "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3"
   }
 }
