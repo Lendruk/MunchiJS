@@ -1,5 +1,7 @@
+import { Action } from "./Action";
 import { Match } from "./Match";
-import { Token, TokenPair } from "./Token";
+import { SimpleToken, TokenPair } from "./SimpleToken";
+import Token from "./Token";
 
 export default class Parser {
     actions: Array<Token>;
@@ -35,8 +37,8 @@ export default class Parser {
         let res = chunkOutput + line;
         for (const action of this.actions) {
             // There's an open expression
-            const expStart = action.getExpressionStart();
-            const expEnd = action.getExpressionEnd();
+            const expStart = action.expStart;
+            const expEnd = action.expEnd;
             if (currentMatches.has(expStart)) {
                 const regex = this.buildTokenRegex(expEnd);
                 const index = regex.exec(line)?.index;
@@ -50,19 +52,21 @@ export default class Parser {
                         expEnd: expEnd,
                     };
                     currentMatches.delete(expStart);
-                    const value = action.getAction()(
+                    const value = action.executeAction(
                         res
                             .slice(match.chunkIndex, match.chunkIndexEnd + expEnd.length)
-                            .replace(new RegExp(`[${expStart}${expEnd}]`, "g"), ""),
+                            .replace(this.buildTokenRegex(expStart), "")
+                            .replace(this.buildTokenRegex(expEnd), ""),
                         this.options
                     );
+
                     res = res.slice(0, match.chunkIndex) + value;
                     res = this.parseLine(line.slice(index + expEnd.length), res, currentMatches);
                 }
             } else {
                 const regex = this.buildTokenRegex(expStart);
                 const index = regex.exec(line)?.index;
-                if (index != null && index !== -1 && !this.hasEnclosers(currentMatches, action.getEnclosers())) {
+                if (index != null && index !== -1 && !this.hasEnclosers(currentMatches, action.enclosers)) {
                     currentMatches.set(expStart, index + chunkOutput.length);
                     res = this.parseLine(line, chunkOutput, currentMatches);
                 }

@@ -1,7 +1,8 @@
 import fs from "fs";
 import { Action, ActionFunction } from "./Action";
 import Parser from "./Parser";
-import { Token, TokenPair } from "./Token";
+import { SimpleToken, TokenPair } from "./SimpleToken";
+import Token from "./Token";
 
 export type IndexableObject = { [index: string]: any };
 
@@ -9,20 +10,24 @@ export default class TemplateEngine {
     viewDirectory: string;
     tokens: Array<Token>;
 
+    defaultAction: Action;
+
     constructor(viewDirectory: string) {
         this.viewDirectory = viewDirectory;
         this.tokens = [];
+        this.defaultAction = new Action("{{", "}}", new Map());
+        this.tokens.push(this.defaultAction);
     }
 
     registerAction(action: ActionFunction, handler: string): void {
-        if (this.tokens.find((act) => act instanceof Action && act.getHandler() === handler))
+        if (this.defaultAction.getHandlers().has(handler))
             throw new Error("Cannot have more than one action with the same handler");
 
-        this.tokens.push(new Action("{{", "}}", action, handler));
+        this.defaultAction.getHandlers().set(handler, action);
     }
 
-    registerToken(expStart: string, expEnd: string, action: ActionFunction, enclosers?: Array<TokenPair>): void {
-        this.tokens.push(new Token(expStart, expEnd, action, enclosers));
+    registerSimpleToken(expStart: string, expEnd: string, action: ActionFunction, enclosers?: Array<TokenPair>): void {
+        this.tokens.push(new SimpleToken(expStart, expEnd, action, enclosers));
     }
 
     /**

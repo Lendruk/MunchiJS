@@ -1,33 +1,29 @@
-import { ActionFunction } from "./Action";
+import { TokenPair } from "./SimpleToken";
 
-export type TokenPair = { expStart: string; expEnd: string };
-
-export class Token {
-    private expStart: string;
-    private expEnd: string;
-    private actionFunc: ActionFunction;
-    private enclosers?: Array<TokenPair>;
-
-    constructor(expStart: string, expEnd: string, actionFunction: ActionFunction, enclosers?: Array<TokenPair>) {
-        this.expStart = expStart;
-        this.expEnd = expEnd;
-        this.actionFunc = actionFunction;
-        this.enclosers = enclosers;
+export default abstract class Token {
+    private _expStart: string;
+    public get expStart(): string {
+        return this._expStart;
     }
 
-    getExpressionStart(): string {
-        return this.expStart;
+    private _expEnd: string;
+    public get expEnd(): string {
+        return this._expEnd;
     }
 
-    getExpressionEnd(): string {
-        return this.expEnd;
+    private _enclosers?: Array<TokenPair>;
+    public get enclosers(): Array<TokenPair> | undefined {
+        return this._enclosers;
+    }
+    public set enclosers(value: Array<TokenPair> | undefined) {
+        this._enclosers = value;
     }
 
-    getEnclosers(): Array<TokenPair> | undefined {
-        return this.enclosers;
+    constructor(expStart: string, expEnd: string, enclosers?: Array<TokenPair>) {
+        this._expStart = expStart;
+        this._expEnd = expEnd;
+        this._enclosers = enclosers;
     }
 
-    getAction(): ActionFunction {
-        return this.actionFunc;
-    }
+    public abstract executeAction(input: string, options: object): string;
 }

@@ -82,7 +82,7 @@ export default class App {
 
     private initViewengine(): void {
         this.engine = new TemplateEngine("views");
-        this.engine.registerToken("{", "}", variableAction, [
+        this.engine.registerSimpleToken("{", "}", variableAction, [
             { expStart: "{{", expEnd: "}}" },
             { expStart: "<style>", expEnd: "</style>" },
         ]);

@@ -1,23 +1,27 @@
 import { IndexableObject } from "./TemplateEngine";
-import { Token, TokenPair } from "./Token";
+import { TokenPair } from "./SimpleToken";
+import Token from "./Token";
 
 export type ActionFunction = (tokenValue: string, options?: IndexableObject) => string;
 
 export class Action extends Token {
-    private handler: string;
+    private handlerMap: Map<string, ActionFunction>;
 
     constructor(
         expStart: string,
         expEnd: string,
-        actionFunc: ActionFunction,
-        handler: string,
+        handlerMap: Map<string, ActionFunction>,
         enclosers: Array<TokenPair> = []
     ) {
-        super(expStart, expEnd, actionFunc, enclosers);
-        this.handler = handler;
+        super(expStart, expEnd, enclosers);
+        this.handlerMap = handlerMap;
     }
 
-    getHandler(): string {
-        return this.handler;
+    getHandlers(): Map<string, ActionFunction> {
+        return this.handlerMap;
+    }
+
+    public executeAction(input: string, options: object): string {
+        return "";
     }
 }
