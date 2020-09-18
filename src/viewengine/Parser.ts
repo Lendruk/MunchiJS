@@ -1,6 +1,5 @@
-import { Action } from "./Action";
 import { Match } from "./Match";
-import { SimpleToken, TokenPair } from "./SimpleToken";
+import { TokenPair } from "./SimpleToken";
 import Token from "./Token";
 
 export default class Parser {

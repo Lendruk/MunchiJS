@@ -1,5 +1,5 @@
 import fs from "fs";
-import { Action, ActionFunction } from "./Action";
+import { DynamicToken, ActionFunction } from "./DynamicToken";
 import Parser from "./Parser";
 import { SimpleToken, TokenPair } from "./SimpleToken";
 import Token from "./Token";
@@ -10,12 +10,12 @@ export default class TemplateEngine {
     viewDirectory: string;
     tokens: Array<Token>;
 
-    defaultAction: Action;
+    defaultAction: DynamicToken;
 
     constructor(viewDirectory: string) {
         this.viewDirectory = viewDirectory;
         this.tokens = [];
-        this.defaultAction = new Action("{{", "}}", new Map());
+        this.defaultAction = new DynamicToken("{{", "}}", new Map());
         this.tokens.push(this.defaultAction);
     }
 

@@ -4,7 +4,17 @@ import Token from "./Token";
 
 export type ActionFunction = (tokenValue: string, options?: IndexableObject) => string;
 
-export class Action extends Token {
+export type Action = {
+    key: string;
+    action: Function;
+    nextAction?: Action;
+};
+
+export type Handler = {
+    name: string;
+};
+
+export class DynamicToken extends Token {
     private handlerMap: Map<string, ActionFunction>;
 
     constructor(

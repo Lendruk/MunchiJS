@@ -1,4 +1,4 @@
-import { ActionFunction } from "./Action";
+import { ActionFunction } from "./DynamicToken";
 import Token from "./Token";
 
 export type TokenPair = { expStart: string; expEnd: string };
