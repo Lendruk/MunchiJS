@@ -7,28 +7,34 @@ export type ActionFunction = (tokenValue: string, options?: IndexableObject) => 
 export type Action = {
     key: string;
     action: Function;
+    args: Array<Argument>;
     nextAction?: Action;
 };
 
-export type Handler = {
-    name: string;
+export enum ArgumentType {
+    SINGLE,
+    MULTIPLE,
+}
+
+export type Argument = {
+    type: ArgumentType;
+    dataType: string | number | object;
 };
 
 export class DynamicToken extends Token {
-    private handlerMap: Map<string, ActionFunction>;
+    private actions: Array<Action>;
 
-    constructor(
-        expStart: string,
-        expEnd: string,
-        handlerMap: Map<string, ActionFunction>,
-        enclosers: Array<TokenPair> = []
-    ) {
+    constructor(expStart: string, expEnd: string, actions: Array<Action>, enclosers: Array<TokenPair> = []) {
         super(expStart, expEnd, enclosers);
-        this.handlerMap = handlerMap;
+        this.actions = actions;
     }
 
-    getHandlers(): Map<string, ActionFunction> {
-        return this.handlerMap;
+    getActions(): Array<Action> {
+        return this.actions;
+    }
+
+    getAction(handler: string): Action | undefined {
+        return this.actions.find((action) => action.key === handler);
     }
 
     public executeAction(input: string, options: object): string {

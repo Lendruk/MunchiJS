@@ -15,15 +15,15 @@ export default class TemplateEngine {
     constructor(viewDirectory: string) {
         this.viewDirectory = viewDirectory;
         this.tokens = [];
-        this.defaultAction = new DynamicToken("{{", "}}", new Map());
+        this.defaultAction = new DynamicToken("{{", "}}", []);
         this.tokens.push(this.defaultAction);
     }
 
-    registerAction(action: ActionFunction, handler: string): void {
-        if (this.defaultAction.getHandlers().has(handler))
+    registerAction(handler: string): void {
+        if (this.defaultAction.getActions().find((act) => act.key === handler))
             throw new Error("Cannot have more than one action with the same handler");
 
-        this.defaultAction.getHandlers().set(handler, action);
+        // this.defaultAction.getAction(handler)?.
     }
 
     registerSimpleToken(expStart: string, expEnd: string, action: ActionFunction, enclosers?: Array<TokenPair>): void {
