@@ -27,7 +27,7 @@ export class SimpleToken extends Token {
         return this.actionFunc;
     }
 
-    public executeAction(input: string, options: object): string {
+    public execute(input: string, options: object): string {
         return this.actionFunc(input, options);
     }
 }

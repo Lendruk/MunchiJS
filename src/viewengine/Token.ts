@@ -25,5 +25,5 @@ export default abstract class Token {
         this._enclosers = enclosers;
     }
 
-    public abstract executeAction(input: string, options: object): string;
+    public abstract execute(input: string, options: object): string;
 }

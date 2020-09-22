@@ -51,7 +51,7 @@ export default class Parser {
                         expEnd: expEnd,
                     };
                     currentMatches.delete(expStart);
-                    const value = action.executeAction(
+                    const value = action.execute(
                         res
                             .slice(match.chunkIndex, match.chunkIndexEnd + expEnd.length)
                             .replace(this.buildTokenRegex(expStart), "")
