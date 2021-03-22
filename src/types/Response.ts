@@ -1,7 +1,7 @@
 import { Response as ExpressResponse } from "express";
 
 export interface Response extends ExpressResponse {
-    messageCode?: string;
-    message?: string;
-    [x: string]: any;
+  messageCode?: string;
+  message?: string;
+  [x: string]: any;
 }

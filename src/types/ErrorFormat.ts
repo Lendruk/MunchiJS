@@ -1,5 +1,5 @@
 export type ErrorFormat = {
-    status: number;
-    messageCode: string;
-    message?: string;
+  status: number;
+  messageCode: string;
+  message?: string;
 };

@@ -1,4 +1,4 @@
-import Expiry from "../classes/Expiry";
+import Expiry from "./Expiry";
 
 test("Test getSeconds", () => {
     const expiry = new Expiry({ days: 5, hours: 12 });

@@ -3,22 +3,22 @@ import { RouteOptions } from "../types/RouteOptions";
 import { Request } from "../types/Request";
 
 export interface RouteType {
-    path: string;
+  path: string;
 
-    requestMethod: "get" | "post" | "put" | "patch" | "delete";
+  requestMethod: "get" | "post" | "put" | "patch" | "delete";
 
-    methodName: string | symbol;
+  methodName: string | symbol;
 
-    middleware?: Function[];
+  middleware?: Function[];
 
-    propertyKey?: string | symbol;
+  propertyKey?: string | symbol;
 
-    routeOptions?: RouteOptions;
+  routeOptions?: RouteOptions;
 }
 
 export interface MiddyPair {
-    functions: Array<MiddyFunction>;
-    method: string | symbol;
+  functions: Array<MiddyFunction>;
+  method: string | symbol;
 }
 
 export type MiddyFunction = (req: Request, res: Response, next: NextFunction) => void;

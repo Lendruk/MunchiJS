@@ -1,3 +1,3 @@
 export interface Activatable {
-    _active: boolean;
+  _active: boolean;
 }
