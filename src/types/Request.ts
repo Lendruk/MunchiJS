@@ -1,7 +1,7 @@
-import { UserModel } from "../../models/user";
+// import { UserModel } from "../../models/user";
 
 export interface Request {
-  user?: Pick<UserModel, any>;
+  user?: Pick<any, any>;
   body?: any;
   headers?: any;
   query?: any;

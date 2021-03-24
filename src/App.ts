@@ -14,7 +14,6 @@ import { Request } from "./types/Request";
 import { Response } from "./types/Response";
 import TemplateEngine from "./viewengine/TemplateEngine";
 import { BaseController } from "./BaseController";
-import { variableAction } from "./viewengine/Actions";
 
 export default class App {
   static controllers: Set<BaseController> = new Set();
@@ -29,26 +28,14 @@ export default class App {
     debug?: boolean;
     errorType?: {};
     authentication?: {};
+    port?: number;
   }) {
     App.instance = this;
-    this.initViewengine();
     this.app = express();
     this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
 
-    // Register the view engine
-    // const engine = new TemplateEngine("views");
-    // this.app.engine("munch", (filePath, options, callback) => {
-    //     console.log("filePath", filePath);
-    //     try {
-    //         engine.render("Home", options).then((res) => callback(null, res));
-    //     } catch (e) {
-    //         console.log("error", e);
-    //     }
-    // });
-    // this.app.set("views", "../../views");
-    // this.app.set("view engine", "munch");
     if (options?.plugins) this.applyPlugins(options?.plugins);
 
     // Initialize the dependecy injection
@@ -75,18 +62,9 @@ export default class App {
 
     //Error Handler
     this.app.use(options?.errorHandler ? options.errorHandler : ErrorManager.handleError);
-
-    httpServer.listen(4000);
-    console.log("server listening on port 4000");
-  }
-
-  private initViewengine(): void {
-    this.engine = new TemplateEngine("views");
-    this.engine.registerSimpleToken("{", "}", variableAction, [
-      { expStart: "{{", expEnd: "}}" },
-      { expStart: "<style>", expEnd: "</style>" },
-    ]);
-    // this.engine.registerAction(forLoop);
+    const serverPort = options?.port ? options.port : 4000;
+    httpServer.listen(serverPort);
+    console.log(`server listening on port ${serverPort}`);
   }
 
   static getControllers(): Set<BaseController> {

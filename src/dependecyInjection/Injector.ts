@@ -22,7 +22,7 @@ export class Injector {
     return false;
   }
 
-  retrieveService(service: any): any | null {
+  public retrieveService(service: any): any | null {
     const keys = this.serviceMap.keys();
     let key = keys.next();
     while (!key.done) {
@@ -33,13 +33,13 @@ export class Injector {
     return null;
   }
 
-  registerService(service: any, ...args: any): void {
+  public registerService(service: any, ...args: any): void {
     if (!this.hasService(service)) {
       this.serviceMap.set(new service(...args), new Array<any>());
     }
   }
 
-  registerConsumer(service: any, consumer: any): void {
+  public registerConsumer(service: any, consumer: any): void {
     if (!this.hasService(service)) {
       this.registerService(service);
     }
@@ -49,10 +49,5 @@ export class Injector {
     this.serviceMap.set(service, consumers || new Array<any>());
 
     return servicePair?.service;
-  }
-
-  injectService(service: any) {
-    if (this.serviceMap.has(service)) {
-    }
   }
 }
