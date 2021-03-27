@@ -1,0 +1,63 @@
+import { mongoose } from "../Database";
+import { DatabaseController } from "../DatabaseController";
+import { Model } from "../Model";
+import ObjectId from "./ObjectId";
+
+export class MongoDatabaseController extends DatabaseController {
+  public async init(url: string, options: mongoose.ConnectOptions, debug: boolean): Promise<void> {
+    mongoose.set("debug", debug);
+    await mongoose.connect(url, options);
+  }
+
+  public async findResource<T extends Model<ResourceId>, ResourceId = ObjectId>(resourceId: ResourceId): Promise<T> {
+    let obj!: new () => T;
+    const model = mongoose.model(obj.name);
+    try {
+      // TODO - remove any
+      return (await model.findOne({ _id: resourceId })) as any;
+    } catch (error) {
+      throw new Error(`${error} - Could not fetch the resource due to a database error`);
+    }
+  }
+
+  public async saveResource<T extends Model<ResourceId>, ResourceId>(item: T): Promise<T> {
+    let obj!: new () => T;
+    const model = mongoose.model(obj.name);
+    try {
+      // TODO - Replace any
+      return (await model.create(item)) as any;
+    } catch (error) {
+      throw new Error("Could not create a new resource");
+    }
+  }
+
+  public async deleteResource<T extends Model<ResourceId>, ResourceId = ObjectId>(
+    resourceId: ResourceId
+  ): Promise<boolean> {
+    let obj!: new () => T;
+    const model = mongoose.model(obj.name);
+    try {
+      return !!(await model.deleteOne({ _id: resourceId }));
+    } catch (error) {
+      return false;
+    }
+  }
+
+  public async hasResource<T extends Model<ResourceId>, ResourceId = ObjectId>(
+    resourceId: ResourceId
+  ): Promise<boolean> {
+    let obj!: new () => T;
+    const model = mongoose.model(obj.name);
+    try {
+      return !!(await model.findOne({ _id: resourceId }));
+    } catch (error) {
+      return false;
+    }
+  }
+}
+
+class MM<T = ObjectId> extends Model<T> {}
+class X extends MM {}
+
+const d = new MongoDatabaseController();
+d.hasResource<X>(new ObjectId("dd"));

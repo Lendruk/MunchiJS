@@ -44,7 +44,7 @@ export default class TemplateEngine {
    * @param options Object containing properties that will be used by the template
    */
   async render(viewComp: string, options?: object): Promise<string> {
-    const stream = fs.createReadStream(`${process.cwd()}/app/${this.viewDirectory}/${viewComp}/index.munch`);
+    const stream = fs.createReadStream(`${process.cwd()}/server/${this.viewDirectory}/${viewComp}/index.munch`);
     const parser = new Parser(this.tokens, options);
     let output = "";
     for await (const chunk of stream) {
