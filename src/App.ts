@@ -9,7 +9,7 @@ import { ControllerExtractor } from "./ControllerExtractor";
 import { RouteAggregator } from "./RouteAggregator";
 import { SocketServer } from "./SocketServer";
 import { ErrorManager } from "./ErrorManager";
-import { MiddyFunction } from "./decorators/routeType";
+import { MiddyFunction } from "./decorators/RouteType";
 import { Request } from "./types/Request";
 import { Response } from "./types/Response";
 import TemplateEngine from "./viewengine/TemplateEngine";

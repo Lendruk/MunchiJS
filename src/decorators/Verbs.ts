@@ -1,5 +1,5 @@
-import { RouteType } from "../routeType";
-import { RouteOptions } from "../../types/RouteOptions";
+import { RouteType } from "./RouteType";
+import { RouteOptions } from "../types/RouteOptions";
 
 const MethodHandler = (method: "get" | "put" | "post" | "patch" | "delete") => {
   return (path: string, routeOptions?: RouteOptions): MethodDecorator => {

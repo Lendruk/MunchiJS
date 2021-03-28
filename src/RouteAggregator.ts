@@ -1,7 +1,7 @@
 import { NextFunction } from "express";
 import e from "express";
 // Import Controllers
-import { RouteType, MiddyPair, MiddyFunction } from "./decorators/routeType";
+import { RouteType, MiddyPair, MiddyFunction } from "./decorators/RouteType";
 import { BaseController } from "./BaseController";
 import { RouteOptions } from "./types/RouteOptions";
 import { ErrorManager } from "./ErrorManager";
