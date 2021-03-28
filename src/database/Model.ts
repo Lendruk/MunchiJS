@@ -1,7 +1,8 @@
 import { DatabaseController } from "./DatabaseController";
 import { Inject } from "../dependecyInjection/Inject";
 import { Constructable } from "../interfaces/Constructable";
-import ObjectId from "./mongo/ObjectId";
+import { ModelQuery } from "./Query";
+import { ResourceId } from "./ResourceId";
 
 export abstract class Model<ResourceKey> {
   private resourceId!: ResourceKey;
@@ -25,16 +26,11 @@ export abstract class Model<ResourceKey> {
     return arr;
   }
 
-  static async findById<Y, T extends Model<Y> = Model<Y>>(this: Constructable<T>, id: Y): Promise<T[]> {
-    const arr: T[] = [];
-    return arr;
+  static async findById<T extends Model<ResourceId>>(
+    this: Constructable<T>,
+    id: ResourceId
+  ): Promise<ModelQuery<ResourceId, T>> {
+    const query = new ModelQuery<ResourceId, T>().findById(id);
+    return query;
   }
 }
-
-// Model.test = 2;
-class Test extends Model<ObjectId> {}
-Test.findById<ObjectId>(new ObjectId("rr"));
-Test.findAll();
-// Test.test.
-// Test.findById();
-// Test.find({ name: "dae" });

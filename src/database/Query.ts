@@ -11,11 +11,15 @@ export abstract class Query<Model, ResourceKey> {
 export class ModelQuery<ResourceId, T extends Model<ResourceId>> {
   @Inject()
   private databaseController!: DatabaseController;
-  result?: T;
+  items?: T[];
 
   async findById(resourceId: ResourceId): Promise<this> {
-    this.result = await this.databaseController.findResource<ResourceId, T>(resourceId);
+    this.items = [await this.databaseController.findResource<ResourceId, T>(resourceId)];
     return this;
   }
-  // abstract findOne(): Promise<this>;
+
+  async findAll(): Promise<this> {
+    this.items = await this.databaseController.retrieveAll<ResourceId, T>();
+    return this;
+  }
 }

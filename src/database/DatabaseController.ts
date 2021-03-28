@@ -7,6 +7,8 @@ export abstract class DatabaseController {
 
   public abstract findResource<ResourceKey, T extends Model<ResourceKey>>(resourceId: ResourceKey): Promise<T>;
 
+  public abstract retrieveAll<ResourceKey, T extends Model<ResourceKey>>(): Promise<T[]>;
+
   public abstract hasResource<ResourceKey>(resourceId: ResourceKey): Promise<boolean>;
 
   public abstract deleteResource<ResourceKey>(resourceId: ResourceKey): Promise<boolean>;

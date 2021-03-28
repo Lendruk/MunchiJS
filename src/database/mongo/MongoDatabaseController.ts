@@ -9,6 +9,17 @@ export class MongoDatabaseController extends DatabaseController {
     await mongoose.connect(url, options);
   }
 
+  public async retrieveAll<ResourceId, T extends Model<ResourceId>>(): Promise<T[]> {
+    let obj!: new () => T;
+    const model = mongoose.model(obj.name);
+    try {
+      // TODO - remove any
+      return (await model.find({})) as any;
+    } catch (error) {
+      throw new Error(`${error} - Could not fetch the resource due to a database error`);
+    }
+  }
+
   public async findResource<T extends Model<ResourceId>, ResourceId = ObjectId>(resourceId: ResourceId): Promise<T> {
     let obj!: new () => T;
     const model = mongoose.model(obj.name);
@@ -55,9 +66,3 @@ export class MongoDatabaseController extends DatabaseController {
     }
   }
 }
-
-class MM<T = ObjectId> extends Model<T> {}
-class X extends MM {}
-
-const d = new MongoDatabaseController();
-d.hasResource<X>(new ObjectId("dd"));
