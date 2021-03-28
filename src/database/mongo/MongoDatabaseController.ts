@@ -1,8 +1,10 @@
+import { Injectable } from "../../dependecyInjection/Injectable";
 import { mongoose } from "../Database";
 import { DatabaseController } from "../DatabaseController";
 import { Model } from "../Model";
 import ObjectId from "./ObjectId";
 
+@Injectable()
 export class MongoDatabaseController extends DatabaseController {
   public async init(url: string, options: mongoose.ConnectOptions, debug: boolean): Promise<void> {
     mongoose.set("debug", debug);

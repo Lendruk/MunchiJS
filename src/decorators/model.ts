@@ -1,54 +1,53 @@
 import { PropertyOptions } from "../types/PropertyOptions";
-import { mongoose } from "../database/Database";
-import { Model as MongooseModel, SchemaOptions } from "mongoose";
-import { ModelProperties } from "../types/ModelProperties";
-import ObjectId from "../database/mongo/ObjectId";
-import { BaseModel } from "../BaseModel";
 
-function extractType(propOptions: any, items?: any) {
-  const type = propOptions.type as Function;
-  if (!type) return {};
+// function extractType(propOptions: any, items?: any) {
+//   const type = propOptions.type as Function;
+//   if (!type) return {};
 
-  if (items) {
-    if (Reflect.hasMetadata("properties", items) && !items.modelName) {
-      delete propOptions.items;
-      delete propOptions.type;
-      return [{ ...propOptions, ...extractTypes(Reflect.getMetadata("properties", items)) }];
-    } else {
-      return [{ type: ObjectId, ref: items.modelName || items.name }];
-    }
-  } else {
-    if (Reflect.hasMetadata("properties", type)) {
-      return { ...propOptions, type: extractTypes(Reflect.getMetadata("properties", type)) };
-    } else {
-      return { ...propOptions };
-    }
-  }
-}
+//   if (items) {
+//     if (Reflect.hasMetadata("properties", items) && !items.modelName) {
+//       delete propOptions.items;
+//       delete propOptions.type;
+//       return [{ ...propOptions, ...extractTypes(Reflect.getMetadata("properties", items)) }];
+//     } else {
+//       return [{ type: ObjectId, ref: items.modelName || items.name }];
+//     }
+//   } else {
+//     if (Reflect.hasMetadata("properties", type)) {
+//       return { ...propOptions, type: extractTypes(Reflect.getMetadata("properties", type)) };
+//     } else {
+//       return { ...propOptions };
+//     }
+//   }
+// }
 
-function extractTypes(properties: any): { [index: string]: any } {
-  const schemaProperties: { [index: string]: any } = {};
-  for (const property of properties) {
-    const key = property.propertyKey;
-    delete property.propertyKey;
+// function extractTypes(properties: any): { [index: string]: any } {
+//   const schemaProperties: { [index: string]: any } = {};
+//   for (const property of properties) {
+//     const key = property.propertyKey;
+//     delete property.propertyKey;
 
-    schemaProperties[key] = extractType(property, property.items);
-  }
+//     schemaProperties[key] = extractType(property, property.items);
+//   }
 
-  return schemaProperties;
-}
+//   return schemaProperties;
+// }
 
-export const ModelOptions = (modelProperties: ModelProperties): ClassDecorator => {
-  return (target: any): void => {
-    if (typeof target === "function") {
-      if (!Reflect.hasMetadata("properties", target)) {
-        Reflect.defineMetadata("properties", [], target);
-      }
-
-      Reflect.defineMetadata("ModelOptions", modelProperties, target);
-    }
-  };
+export const DefineModel = (props: any): ClassDecorator => {
+  return (target: Function): void => {};
 };
+
+// export const ModelOptions = (modelProperties: ModelProperties): ClassDecorator => {
+//   return (target: any): void => {
+//     if (typeof target === "function") {
+//       if (!Reflect.hasMetadata("properties", target)) {
+//         Reflect.defineMetadata("properties", [], target);
+//       }
+
+//       Reflect.defineMetadata("ModelOptions", modelProperties, target);
+//     }
+//   };
+// };
 
 export const Property = (modelProperty: PropertyOptions): PropertyDecorator => {
   return (target: any, propertyKey: string | symbol): void => {
@@ -65,47 +64,50 @@ export const Property = (modelProperty: PropertyOptions): PropertyDecorator => {
   };
 };
 
-// Refactor this completely
-export const getModelFromClass = <T extends BaseModel>(target: Function): MongooseModel<T> => {
-  if (!Reflect.hasMetadata("properties", target)) {
-    Reflect.defineMetadata("properties", [], target);
-  }
+/**
+ * @deprecated
+ */
+// export const getModelFromClass = <T extends MongoModel>(target: Function): MongooseModel<T> => {
+//   if (!Reflect.hasMetadata("properties", target)) {
+//     Reflect.defineMetadata("properties", [], target);
+//   }
 
-  let modelOptions: ModelProperties = {};
-  const schemaOptions: SchemaOptions = {};
-  if (Reflect.hasMetadata("ModelOptions", target)) {
-    modelOptions = Reflect.getMetadata("ModelOptions", target) as ModelProperties;
-    if (modelOptions.noId) {
-      schemaOptions._id = false;
-    }
-  }
+//   let modelOptions: ModelProperties = {};
+//   const schemaOptions: SchemaOptions = {};
+//   if (Reflect.hasMetadata("ModelOptions", target)) {
+//     modelOptions = Reflect.getMetadata("ModelOptions", target) as ModelProperties;
+//     if (modelOptions.noId) {
+//       schemaOptions._id = false;
+//     }
+//   }
 
-  const schemaProperties = extractTypes(Reflect.getMetadata("properties", target));
-  const schema = new mongoose.Schema(
-    {
-      ...schemaProperties,
-    },
-    { timestamps: { createdAt: "_created", updatedAt: "_modified" } }
-  );
+//   // const schemaProperties = extractTypes(Reflect.getMetadata("properties", target));
+//   const schemaProperties = {};
+//   const schema = new mongoose.Schema(
+//     {
+//       ...schemaProperties,
+//     },
+//     { timestamps: { createdAt: "_created", updatedAt: "_modified" } }
+//   );
 
-  // Add Static Functions
-  for (const staticKey of Object.getOwnPropertyNames(target)) {
-    if (!["length", "name", "prototype"].includes(staticKey)) {
-      schema.statics[staticKey] = target[staticKey as keyof typeof target];
-    }
-  }
+//   // Add Static Functions
+//   for (const staticKey of Object.getOwnPropertyNames(target)) {
+//     if (!["length", "name", "prototype"].includes(staticKey)) {
+//       schema.statics[staticKey] = target[staticKey as keyof typeof target];
+//     }
+//   }
 
-  // Add Methods
-  for (const protoKey of Object.getOwnPropertyNames(target.prototype)) {
-    if (protoKey !== "constructor") {
-      const protoFunction = target.prototype[protoKey];
-      schema.methods[protoKey] = protoFunction;
-    }
-  }
+//   // Add Methods
+//   for (const protoKey of Object.getOwnPropertyNames(target.prototype)) {
+//     if (protoKey !== "constructor") {
+//       const protoFunction = target.prototype[protoKey];
+//       schema.methods[protoKey] = protoFunction;
+//     }
+//   }
 
-  if (modelOptions?.expireAfter) {
-    schema.index({ _created: 1 }, { expireAfterSeconds: modelOptions.expireAfter.getSeconds() });
-  }
+//   if (modelOptions?.expireAfter) {
+//     schema.index({ _created: 1 }, { expireAfterSeconds: modelOptions.expireAfter.getSeconds() });
+//   }
 
-  return mongoose.model<T>(target.name.replace(/(Model)+/g, ""), schema);
-};
+//   return mongoose.model<T>(target.name.replace(/(Model)+/g, ""), schema);
+// };

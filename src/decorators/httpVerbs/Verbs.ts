@@ -1,7 +1,7 @@
-import { RouteType } from "./routeType";
-import { RouteOptions } from "../types/RouteOptions";
+import { RouteType } from "../routeType";
+import { RouteOptions } from "../../types/RouteOptions";
 
-export const MethodHandler = (method: "get" | "put" | "post" | "patch" | "delete") => {
+const MethodHandler = (method: "get" | "put" | "post" | "patch" | "delete") => {
   return (path: string, routeOptions?: RouteOptions): MethodDecorator => {
     // target = class
     // propertyKey = decorated Method
@@ -24,3 +24,9 @@ export const MethodHandler = (method: "get" | "put" | "post" | "patch" | "delete
     };
   };
 };
+
+export const Get = MethodHandler("get");
+export const Post = MethodHandler("post");
+export const Put = MethodHandler("put");
+export const Patch = MethodHandler("patch");
+export const Delete = MethodHandler("delete");
